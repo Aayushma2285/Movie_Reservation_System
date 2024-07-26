@@ -3,12 +3,14 @@ package com.texas.MovieReservationSystem.Implementation;
 import com.texas.MovieReservationSystem.dao.MovieRepo;
 import com.texas.MovieReservationSystem.dao.TicketRepo;
 import com.texas.MovieReservationSystem.dao.UserRepo;
+import com.texas.MovieReservationSystem.dto.EmailDto;
 import com.texas.MovieReservationSystem.dto.TicketDto;
 import com.texas.MovieReservationSystem.exceptions.BookingNotAvailableException;
 import com.texas.MovieReservationSystem.exceptions.UserNotFoundException;
 import com.texas.MovieReservationSystem.model.Movie;
 import com.texas.MovieReservationSystem.model.Ticket;
 import com.texas.MovieReservationSystem.model.User;
+import com.texas.MovieReservationSystem.service.EmailService;
 import com.texas.MovieReservationSystem.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,9 @@ public class TicketImpl implements TicketService {
 
     @Autowired
     private UserRepo userRepo;
+
+    @Autowired
+    private EmailService emailService;
 
     @Override
     public void saveTicket(TicketDto ticketDto) {
@@ -56,6 +61,20 @@ public class TicketImpl implements TicketService {
         );
         ticket.setBookedBy(bookedBy);
         ticketRepo.save(ticket);
+
+        String message = String.format(
+                "Dear %s, \n " +
+                        "Your booking has been confirmed.Please find the movie detail below.\n " +
+                        "Movie Name : %s \n" +
+                        "Date : %s\n" +
+                        "Time : %s\n" +
+                        "Total Seat : %s\n" +
+                        "Total Price : %s\n" +
+                        "Thank You !!\n Enjoy your Movie" +
+                        "Thank you for using out site to book your tickets.",
+                ticket.getBookedBy().getName(),movie.getName(),ticket.getDate(),ticket.getTime(),ticket.getNumberOfSeats(),ticket.getTotalPrice());
+        EmailDto emailDto = new EmailDto("Booking has been confirmed.", message, ticket.getBookedBy().getEmail());
+        emailService.sendEmail(emailDto);
     }
 
     @Override

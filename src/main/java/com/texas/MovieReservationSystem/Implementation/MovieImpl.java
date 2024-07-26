@@ -1,12 +1,14 @@
 package com.texas.MovieReservationSystem.Implementation;
 
 import com.texas.MovieReservationSystem.dao.MovieRepo;
+import com.texas.MovieReservationSystem.dto.EmailDto;
 import com.texas.MovieReservationSystem.dto.MovieDto;
 import com.texas.MovieReservationSystem.dto.UserDto;
 import com.texas.MovieReservationSystem.enums.Status;
 import com.texas.MovieReservationSystem.exceptions.UserNotFoundException;
 import com.texas.MovieReservationSystem.model.Movie;
 import com.texas.MovieReservationSystem.model.User;
+import com.texas.MovieReservationSystem.service.EmailService;
 import com.texas.MovieReservationSystem.service.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,8 @@ import java.util.stream.Collectors;
 public class MovieImpl implements MovieService {
     @Autowired
     private MovieRepo movieRepo;
+    @Autowired
+    private EmailService emailService;
     @Override
     public void saveUser(MovieDto movieDto) {
         Movie movie = new Movie();
@@ -28,6 +32,7 @@ public class MovieImpl implements MovieService {
         movie.setPrice(movieDto.getPrice());
         movie.setTotalNumberOfSeats(movieDto.getTotalNumberOfSeats());
         movieRepo.save(movie);
+
     }
     @Override
     public List<MovieDto> findAllMovies() {

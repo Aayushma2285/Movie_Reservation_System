@@ -11,7 +11,7 @@ public interface TicketRepo extends JpaRepository<Ticket, Integer> {
     List<Ticket> findByBookedById(Integer bookedBy);
     @Query(
             nativeQuery = true,
-            value = "select sum(number_of_seats) from ticket where movie_id=?1 and date = ?2 and time = ?3;"
+            value = "select coalesce(sum(number_of_seats),0) from ticket where movie_id=?1 and date = ?2 and time = ?3;"
     )
     Integer findTotalBookedSeatByMovieDateAndTime(Integer movieId, String date, String time);
 }
